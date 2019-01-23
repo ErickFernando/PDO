@@ -2,16 +2,20 @@
 spl_autoload_register(function($clase) {
     require_once "$clase.php";
 });
-
+$d = null;
+$muestraR = false;
 if (isset($_POST['submit'])) {
     $host = $_POST['host'];
     $user = $_POST['user'];
     $pwd = $_POST['pwd'];
     $bd = new ConexionPDO($host, $user, $pwd);
-    
-   
-      
-    
+    $nomBD = $bd->muestraBD();
+    if ($nomBD != null) {
+        foreach ($nomBD as $key => $value) {
+            $d[] = $value['Database'];
+        }
+        $muestraR = true;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -29,9 +33,22 @@ if (isset($_POST['submit'])) {
                 <label>User</label>
                 <input type="text" name="user"><br/>
                 <label>Password</label>
-                <input type="password" name="pwd"><br/>
-                <input type="submit" name="submit" value="conectar">
+                <input type="password" name="pwd"><br/>            
+                <input type="submit" name="submit" value="conectar"><br/>
+
+
+
+
             </form>
+
+            <?php
+            if ($muestraR) {
+                foreach ($d as $value) {
+
+                    echo "<a href='tablas.php?tabla=$value'> $value</a><br/>";
+                }
+            }
+            ?>
         </fieldset>
     </body>
 </html>

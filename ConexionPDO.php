@@ -10,15 +10,12 @@ class ConexionPDO {
     private $host;
     private $user;
     private $pwd;
-    private $conex;
     private $bd;
 
-    function __construct($host, $user, $pwd, string $bd = "") {
+    function __construct($host, $user, $pwd) {
         $this->host = $host;
         $this->user = $user;
         $this->pwd = $pwd;
-        $this->bd = $bd;
-        
     }
 
     public function muestraBD() {
@@ -36,25 +33,38 @@ class ConexionPDO {
         }
     }
 
-    private function conectar() {
-        try {
-            $con = new PDO("mysql:" . $this->host."; dbname=".$this->bd, $this->user, $this->pwd);
-            echo "logeado";
+  
 
-            $this->conex = $con;
-        } catch (PDOException $ex) {
-            echo $ex->getMessage();
-        }
-    }
-    
-    function getConex() {
-        return $this->conex;
+    function getHost() {
+        return $this->host;
     }
 
-    function setConex($conex) {
-        $this->conex = $conex;
+    function getUser() {
+        return $this->user;
     }
 
+    function getPwd() {
+        return $this->pwd;
+    }
 
+    function getBd() {
+        return $this->bd;
+    }
+
+    function setHost($host) {
+        $this->host = $host;
+    }
+
+    function setUser($user) {
+        $this->user = $user;
+    }
+
+    function setPwd($pwd) {
+        $this->pwd = $pwd;
+    }
+
+    function setBd($bd) {
+        $this->bd = $bd;
+    }
 
 }

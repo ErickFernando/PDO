@@ -11,11 +11,28 @@ class ConexionPDO {
     private $user;
     private $pwd;
     private $bd;
+    private $conex;
+    private $opciones = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8", PDO::ATTR_ERRMODE => true, PDO::ERRMODE_EXCEPTION => true);
 
-    function __construct($host, $user, $pwd) {
+    function __construct($host, $user, $pwd, $bd = "") {
         $this->host = $host;
         $this->user = $user;
         $this->pwd = $pwd;
+        if ($bd != "") {
+            $this->bd =$bd;
+            $this->conex = $this->conectar();
+        }
+    }
+
+    public function conectar() {
+        try {
+
+            $con = new PDO("mysql:host=" . $this->host . "; dbname=$this->bd", $this->user, $this->pwd, $this->opciones);
+            echo "Conectado";
+            return $con;
+        } catch (PDOException $ex) {
+            echo $ex->getMessage() . "<br/>";
+        }
     }
 
     public function muestraBD() {
@@ -33,7 +50,16 @@ class ConexionPDO {
         }
     }
 
-  
+    public function muestraTablas() {
+        echo "$this->bd ads";
+        $r = $this->conex->prepare("show full tables");
+        $r->execute();
+        $tb = null;
+        while ($f = $r->fetch(PDO::FETCH_ASSOC)) {
+            $tb[] = $f;
+        }
+        return $tb;
+    }
 
     function getHost() {
         return $this->host;

@@ -13,6 +13,10 @@ if (isset($_POST['submit'])) {
     $host = $_POST['host'];
     $user = $_POST['user'];
     $pwd = $_POST['pwd'];
+
+    $_SESSION['host'] = $host;
+    $_SESSION['pwd'] = $pwd;
+    $_SESSION['user'] = $user;
     $bd = new ConexionPDO($host, $user, $pwd);
     $nomBD = $bd->muestraBD();
     if ($nomBD != null) {
@@ -22,9 +26,7 @@ if (isset($_POST['submit'])) {
         }
         $muestraR = true;
     }
-    $_SESSION['host']=$host;
-    $_SESSION['pwd']=$pwd;
-    $_SESSION['user']=$user;
+
 
     //    break;
     //case 'ver_data_base':

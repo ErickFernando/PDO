@@ -14,14 +14,14 @@ $user = $_SESSION['user'];
 $pwd = $_SESSION['pwd'];
 
 
-$bd = new ConexionBD($host, $user, $user, $nombreBD);
+$bd = new ConexionPDO($host, $user, $pwd, $nombreBD);
 $bd->conectar();
 
 $tablas = $bd->muestraTablas();
-$nombresTalbas=[];
+$nombresTalbas = [];
 if ($tablas != null) {
-    foreach ($tablas as $key => $value) {      
-       $nombresTalbas[]=$value['Tables_in_'.$nombreBD];
+    foreach ($tablas as $key => $value) {
+        $nombresTalbas[] = $value['Tables_in_' . $nombreBD];
     }
 }
 ?>
@@ -33,16 +33,16 @@ if ($tablas != null) {
     </head>
     <body>
         <fieldset >
-            <legend>Selecciona tablas <?php echo "$nombreBD";?> </legend>
+            <legend>Selecciona tablas <?php echo "$nombreBD"; ?> </legend>
             <form action="tablas.php" method="POST">
-               <?php 
-               foreach ($nombresTalbas as $value) {
-                   echo "<input type='button' value=$value>  ";
-               }
-               ?>
-                
+                <?php
+                foreach ($nombresTalbas as $value) {
+                    echo "<input type='button' value=$value>  ";
+                }
+                ?>
+
             </form>
-             <form style="float: right;" action="index.php" method="POST"><input type="submit" name="volver" value="volver"></form>
+            <form style="float: right;" action="index.php" method="POST"><input type="submit" name="volver" value="volver"></form>
         </fieldset>
     </body>
 </html>

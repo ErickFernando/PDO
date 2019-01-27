@@ -14,12 +14,12 @@ class ConexionPDO {
     private $conex;
     private $opciones = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8", PDO::ATTR_ERRMODE => true, PDO::ERRMODE_EXCEPTION => true);
 
-    function __construct($host, $user, $pwd, $bd = "") {
-        $this->host = $host;
-        $this->user = $user;
-        $this->pwd = $pwd;
+    function __construct(array $conexion, $bd = "") {
+        $this->host = $conexion['host'];
+        $this->user = $conexion['user'];
+        $this->pwd = $conexion['pwd'];
         if ($bd != "") {
-            $this->bd =$bd;
+            $this->bd = $bd;
             $this->conex = $this->conectar();
         }
     }
@@ -51,7 +51,7 @@ class ConexionPDO {
     }
 
     public function muestraTablas() {
-        echo "$this->bd ads";
+      
         $r = $this->conex->prepare("show full tables");
         $r->execute();
         $tb = null;
@@ -59,6 +59,43 @@ class ConexionPDO {
             $tb[] = $f;
         }
         return $tb;
+    }
+
+    public function muestraCampos(string $nombreTabla) {
+
+        $consulta = $this->conex->query("select * from $nombreTabla");
+//        $consulta->execute();
+        $nombre_tabla = null;
+//        while ($f = $consulta->fetch(PDO::FETCH_ASSOC)) {
+//            $nombre_tabla[] = $f;
+//        }
+        $total_column = $consulta->columnCount();
+
+        for ($counter = 0; $counter < $total_column; $counter ++) {
+            $meta = $consulta->getColumnMeta($counter);
+            $nombre_tabla[] = $meta['name'];
+        }
+        return $nombre_tabla;
+    }
+
+    public function muestraVlores(string $nombreTabla) {
+
+        $consulta = $this->conex->query("select * from $nombreTabla");
+//        $consulta->execute();
+        $nombre_tabla = null;
+
+        while ($f = $consulta->fetch(PDO::FETCH_NUM)) {
+            $nombre_tabla[] = $f;
+        }
+        return $nombre_tabla;
+    }
+
+    public function buscaValor(string $key, string $nameTable, $id) {
+        $consulta = $this->conex->prepare("select * from $nameTable where $key ='$id'");
+        $consulta->execute();
+        while ($f = $consulta->fetch(PDO::FETCH_ASSOC)) {
+            return $f;
+        }
     }
 
     function getHost() {

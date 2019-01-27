@@ -6,18 +6,38 @@ session_start();
 $d = null;
 $muestraR = false;
 
+//Si paso parámetros de conexión los leo
+$datosConexión = [];
+
+
+
+
+
 if (isset($_POST['submit'])) {
 
     //switch ($_POST['submit']) {
     //  case 'conectar':
-    $host = $_POST['host'];
-    $user = $_POST['user'];
-    $pwd = $_POST['pwd'];
+    if (isset($_POST['conectar'])) {
 
-    $_SESSION['host'] = $host;
-    $_SESSION['pwd'] = $pwd;
-    $_SESSION['user'] = $user;
-    $bd = new ConexionPDO($host, $user, $pwd);
+        //Guardo los datos de conexión en variable de sesión
+        $_SESSION['conexion']['host'] = filter_input(INPUT_POST, 'host');
+        $_SESSION['conexion']['user'] = filter_input(INPUT_POST, 'usuario');
+        $_SESSION['conexion']['pass'] = filter_input(INPUT_POST, 'pass');
+    }
+
+    if (isset($_SESSION['conexion'])) {
+//Si ya he establecido previamente conexión, recojo los datos de sesión
+//Si no contendrán null y la conexión fallará y me informará de ello
+        $conexion = $_SESSION['conexion'];
+    } else {
+        $_SESSION['conexion']['host'] = 'localhost';
+        $_SESSION['conexion']['user'] = 'root';
+        $_SESSION['conexion']['pwd'] = 'root';
+    }
+
+    $conexion = $_SESSION['conexion'];
+//creo un objeto de conexión con la base de datos
+    $bd = new ConexionPDO($conexion);
     $nomBD = $bd->muestraBD();
     if ($nomBD != null) {
 
@@ -26,21 +46,10 @@ if (isset($_POST['submit'])) {
         }
         $muestraR = true;
     }
-
-
-    //    break;
-    //case 'ver_data_base':
-//            $radiBD = $_POST['nBD'];
-//
-//            $_SESSION['host'] = $host;
-//            $_SESSION['bd'] = $radiBD;
-//            $_SESSION['user'] = $user;
-//            $_SESSION['pwd'] = $pwd;
-//            echo "$host $user $pwd";
-//            header("Location:tablas.php");
-//            exit();
-    //          break;
-//}
+} if (isset($_POST['nombre_bd'])) {
+    $_SESSION['ndb'] = $_POST['nombre_bd'];
+    header("Location:tablas.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -62,19 +71,20 @@ if (isset($_POST['submit'])) {
                 <input type="submit" name="submit" value="conectar"><br/>
             </form>
 
-            <?php
-            if ($muestraR) {
-//                echo "<form action='index.php' method='POST'>";
-                foreach ($d as $ndb) {
+<?php
+if ($muestraR) {
+    echo "<form action='index.php' method='POST'>";
+    foreach ($d as $ndb) {
 
 //                    echo "<a href='tablas.php?ndb=$ndb&host=$host&user=$user&pwd=$pwd'>$ndb</a><br/>";
-                    echo "<a href='tablas.php?ndb=$ndb'>$ndb</a><br/>";
+//                    echo "<a href='tablas.php?ndb=$ndb'>$ndb</a><br/>";
 //                    echo "<input type='radio' name='nBD' value='$ndb'>$ndb<br/>";
-                }
-//                echo "<input type='submit' name='submit' value='ver_data_base'><br/>";
-//                echo "</form>";
-            }
-            ?>
+        echo "<input type='submit' name='nombre_bd' value='$ndb'><br/>";
+    }
+
+    echo "</form>";
+}
+?>
         </fieldset>
     </body>
 </html>

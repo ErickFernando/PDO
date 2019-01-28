@@ -4,15 +4,22 @@ spl_autoload_register(function($clase) {
 });
 session_start();
 
-
+//recogemos el nombre de la tabla seleccionada
 $_nombTabla = $_SESSION['tabla'];
-
-$bd = new ConexionPDO($_SESSION['conexion'], $_SESSION['ndb']);
+//realizamos las respectiva conexion a la bd
+$bd = new ConexionPDO($_SESSION['conexion'], $_SESSION['nombre_bd']);
 $bd->conectar();
 
+
+//con el nombre de la tabla recogemos los nombres de las columnas 
+//de la tabla los guardamos en un array campos[]
+$campos = [];
 $campos = $bd->muestraCampos($_nombTabla);
-$posiciones = [];
+
+//esta varuable de session 'key'
+//son los nombres de los campos, nos la guardamos para posterior uso
 $_SESSION['key'] = $campos;
+//recogemos los valores de cada columna de la tabla
 $rows = $bd->muestraVlores($_nombTabla);
 
 
@@ -28,11 +35,15 @@ if (isset($_POST['submit'])) {
 
             break;
         case 'eliminar':
+            //regemos los valores a eliminar el id(seria el codigo de cada tabla) y el nombrede la tabla
             $id = $_POST['valor1'];
             $nomTab = $_POST['valor2'];
+            //a esta función le pasamos el nombre de la primera columna
+            //ya que normalmente es la clave primaria
+            //el nombre de la tabla y el valor de la columna id
             $ok = $bd->eliminarFila($campos[0], $nomTab, $id);
             if ($ok) {
-                $msj = "Se ha eliminado una fila";
+                $msj = "Se ha eliminado una fila, Recagar la página para ver los cambios";
             } else {
                 $msj = "Imposible eliminar esa fila, puede que haga referencia a otra tabla.";
             }
@@ -88,22 +99,24 @@ if (isset($_POST['submit'])) {
                     echo "<th>$value</th>";
                 }
                 echo "<th>acciones</th><th>acciones</th </tr> </thead> ";
-                echo "<tbody><tr>";
+                if ($rows != null) {
+                    echo "<tbody><tr>";
 
-                foreach ($rows as $value => $f) {
-                    for ($index = 0; $index < count($f); $index++) {
-                        echo "<td>$f[$index]";
-                    }
+                    foreach ($rows as $value => $f) {
+                        for ($index = 0; $index < count($f); $index++) {
+                            echo "<td>$f[$index]";
+                        }
 //                    echo "</td><td><a href = 'registroTabla.php?id=$f[0] & nomTab=$_nombTabla'>Editar</a></td><td>editar</td><tr/>";
-                    echo "</td><td><form action = 'editar.php' method = 'POST'><input type ='hidden' name ='valor1' value ='$f[0]'>"
-                    . " <input type = 'hidden' name = 'valor2' value = '$_nombTabla'>"
-                    . " <input type = 'submit' name = 'submit' value = 'editar'></form>"
-                    . " </td>"
-                    . " <td><form action = 'editar.php' method = 'POST'><input type = 'hidden' name = 'valor1' value = '$f[0]'>"
-                    . " <input type = 'hidden' name = 'valor2' value = '$_nombTabla'>"
-                    . " <input type = 'submit' name = 'submit' value = 'eliminar'></form></td><tr/>";
+                        echo "</td><td><form action = 'editar.php' method = 'POST'><input type ='hidden' name ='valor1' value ='$f[0]'>"
+                        . " <input type = 'hidden' name = 'valor2' value = '$_nombTabla'>"
+                        . " <input type = 'submit' name = 'submit' value = 'editar'></form>"
+                        . " </td>"
+                        . " <td><form action = 'editar.php' method = 'POST'><input type = 'hidden' name = 'valor1' value = '$f[0]'>"
+                        . " <input type = 'hidden' name = 'valor2' value = '$_nombTabla'>"
+                        . " <input type = 'submit' name = 'submit' value = 'eliminar'></form></td><tr/>";
+                    }
+                    echo " </tbody>";
                 }
-                echo " </tbody>";
                 ?><form action="editar.php" method="POST" >
                     <input style=" float: bottom" type="submit" name="submit" value="insertar">
                     <input style=" float: bottom" type="submit" name="submit" value="atras">

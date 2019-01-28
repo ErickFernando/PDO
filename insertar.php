@@ -3,15 +3,19 @@ spl_autoload_register(function($clase) {
     require_once "$clase.php";
 });
 session_start();
+
+//recuperamos el nombre de la tabla y los nombres de las columnas
 $nombTabla = $_SESSION['nombTab'];
 $key = [];
 $key = $_SESSION['key'];
-
-$bd = new ConexionPDO($_SESSION['conexion'], $_SESSION['ndb']);
+//conexiones
+$bd = new ConexionPDO($_SESSION['conexion'], $_SESSION['nombre_bd']);
 $bd->conectar();
 
-
-$campos = $bd->buscaValor2($nombTabla);
+//mostramos los campos 
+//var_dump($key);
+//$campos = $bd->muestraCampos($nombTabla);
+//var_dump($campos);
 $msj = "";
 if (isset($_POST['submit'])) {
     switch ($_POST['submit']) {
@@ -20,7 +24,8 @@ if (isset($_POST['submit'])) {
             $datosAC = $_POST['valor1'];
             $ok = $bd->insert($key, $nombTabla, $datosAC);
             if ($ok) {
-                $msj = "Se ha incertado una nueva fila";
+                header("Location:editar.php");
+                exit();
             } else {
                 $msj = "Algo ha fallado";
             }
@@ -47,8 +52,8 @@ if (isset($_POST['submit'])) {
             <legend>Insertar datos en la tabla <?php echo "$nombTabla"; ?></legend>
             <form action="insertar.php" method="POST">
                 <?php
-                foreach ($campos as $key => $value) {
-                    echo "<label>$key</label><input type='text' name='valor1[]' value=><br/>";
+                for ($index = 0; $index < count($key); $index++) {
+                    echo "<label>$key[$index]</label><input type='text' name='valor1[]' value=><br/>";
                 }
                 ?> 
                 <input type="submit" name='submit' value="guardar">

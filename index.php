@@ -3,14 +3,11 @@ spl_autoload_register(function($clase) {
     require_once "$clase.php";
 });
 session_start();
-$d = null;
+
 $muestraR = false;
 
 //Si paso parámetros de conexión los leo
 $datosConexión = [];
-
-
-
 
 
 if (isset($_POST['submit'])) {
@@ -30,24 +27,31 @@ if (isset($_POST['submit'])) {
 //Si no contendrán null y la conexión fallará y me informará de ello
         $conexion = $_SESSION['conexion'];
     } else {
+        //si no inicializo los valores por defecto
         $_SESSION['conexion']['host'] = 'localhost';
         $_SESSION['conexion']['user'] = 'root';
         $_SESSION['conexion']['pwd'] = 'root';
     }
-
+    $nombres_Database = null;//nombres de todas las bases de datos
     $conexion = $_SESSION['conexion'];
 //creo un objeto de conexión con la base de datos
     $bd = new ConexionPDO($conexion);
+    //conectamos y recuperamos los nombres de las bases de datos
     $nomBD = $bd->muestraBD();
-    if ($nomBD != null) {
-
+    //si es distinto de null entra y guardamos en un array
+    //los nombres de las bases de datos
+    //ojo cada base de datos viene por defecto con el nombre
+    //Database en un array asociativo
+    if ($nomBD != null) {//$
         foreach ($nomBD as $key => $value) {
-            $d[] = $value['Database'];
+            $nombres_Database[] = $value['Database'];
         }
-        $muestraR = true;
+        $muestraR = true;//mostramos las bases de datos
     }
+    //recogemos el nombre de la base de datos selecciona y 
+    //redirigimos a tablas.php
 } if (isset($_POST['nombre_bd'])) {
-    $_SESSION['ndb'] = $_POST['nombre_bd'];
+    $_SESSION['nombre_bd'] = $_POST['nombre_bd'];
     header("Location:tablas.php");
     exit();
 }
@@ -76,7 +80,7 @@ if (isset($_POST['submit'])) {
             if ($muestraR) {
                 echo "<h2>Elige una base de datos</h2>";
                 echo "<form action='index.php' method='POST'>";
-                foreach ($d as $ndb) {
+                foreach ($nombres_Database as $ndb) {
                     echo "<input type='submit' name='nombre_bd' value='$ndb'><br/>";
                 }
                 echo "</form>";

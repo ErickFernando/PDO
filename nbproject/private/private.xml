@@ -2,6 +2,13 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/wamp/www/practica_PDO/tablas.php</file>
+            <file>file:/C:/wamp/www/practica_PDO/registroTabla.php</file>
+            <file>file:/C:/wamp/www/practica_PDO/editar.php</file>
+            <file>file:/C:/wamp/www/practica_PDO/index.php</file>
+            <file>file:/C:/wamp/www/practica_PDO/ConexionPDO.php</file>
+            <file>file:/C:/wamp/www/practica_PDO/estilos.css</file>
+        </group>
     </open-files>
 </project-private>

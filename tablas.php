@@ -5,11 +5,11 @@ spl_autoload_register(function($clase) {
 session_start();
 
 $nombreBD = $_SESSION['ndb'];
-$conexion = $_SESSION['conexion'];
+
 $_SESSION['ndb'] = $nombreBD;
 
 
-$bd = new ConexionPDO($conexion, $nombreBD);
+$bd = new ConexionPDO($_SESSION['conexion'], $nombreBD);
 $bd->conectar();
   
 $tablas = $bd->muestraTablas();
@@ -31,9 +31,10 @@ if (isset($_POST['tabla'])) {
     <head>
         <meta charset="UTF-8">
         <title>TABLAS BD</title>
+         <link rel="stylesheet" type="text/css" href="estilos.css">
     </head>
     <body>
-        <fieldset >
+        <fieldset style="width: 30%">
             <legend>Selecciona tablas <?php echo "$nombreBD"; ?> </legend>
             <form action="tablas.php" method="POST">
                 <?php

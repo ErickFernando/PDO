@@ -57,9 +57,10 @@ if (isset($_POST['submit'])) {
     <head>
         <meta charset="UTF-8">
         <title></title>
+        <link rel="stylesheet" type="text/css" href="estilos.css">
     </head>
     <body>
-        <fieldset>
+        <fieldset style="width: 30%">
             <legend>Conexión</legend>
             <form action="index.php" method="POST">
                 <label>Host</label>
@@ -71,20 +72,16 @@ if (isset($_POST['submit'])) {
                 <input type="submit" name="submit" value="conectar"><br/>
             </form>
 
-<?php
-if ($muestraR) {
-    echo "<form action='index.php' method='POST'>";
-    foreach ($d as $ndb) {
-
-//                    echo "<a href='tablas.php?ndb=$ndb&host=$host&user=$user&pwd=$pwd'>$ndb</a><br/>";
-//                    echo "<a href='tablas.php?ndb=$ndb'>$ndb</a><br/>";
-//                    echo "<input type='radio' name='nBD' value='$ndb'>$ndb<br/>";
-        echo "<input type='submit' name='nombre_bd' value='$ndb'><br/>";
-    }
-
-    echo "</form>";
-}
-?>
+            <?php
+            if ($muestraR) {
+                echo "<h2>Elige una base de datos</h2>";
+                echo "<form action='index.php' method='POST'>";
+                foreach ($d as $ndb) {
+                    echo "<input type='submit' name='nombre_bd' value='$ndb'><br/>";
+                }
+                echo "</form>";
+            }
+            ?>
         </fieldset>
     </body>
 </html>

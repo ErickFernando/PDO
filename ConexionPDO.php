@@ -28,7 +28,7 @@ class ConexionPDO {
         try {
 
             $con = new PDO("mysql:host=" . $this->host . "; dbname=$this->bd", $this->user, $this->pwd, $this->opciones);
-            echo "Conectado";
+
             return $con;
         } catch (PDOException $ex) {
             echo $ex->getMessage() . "<br/>";
@@ -51,7 +51,7 @@ class ConexionPDO {
     }
 
     public function muestraTablas() {
-      
+
         $r = $this->conex->prepare("show full tables");
         $r->execute();
         $tb = null;
@@ -64,11 +64,7 @@ class ConexionPDO {
     public function muestraCampos(string $nombreTabla) {
 
         $consulta = $this->conex->query("select * from $nombreTabla");
-//        $consulta->execute();
         $nombre_tabla = null;
-//        while ($f = $consulta->fetch(PDO::FETCH_ASSOC)) {
-//            $nombre_tabla[] = $f;
-//        }
         $total_column = $consulta->columnCount();
 
         for ($counter = 0; $counter < $total_column; $counter ++) {
@@ -98,6 +94,63 @@ class ConexionPDO {
         }
     }
 
+    public function buscaValor2(string $nameTable) {
+        $consulta = $this->conex->prepare("select * from $nameTable");
+        $consulta->execute();
+        while ($f = $consulta->fetch(PDO::FETCH_ASSOC)) {
+            return $f;
+        }
+    }
+
+    public function update(array $key, string $nomTabla, $id, array $datosAC) {
+        $consulta = "update $nomTabla set ";
+
+        for ($index = 0; $index < count($key); $index++) {
+            $consulta .= $key[$index] . "='$datosAC[$index]', ";
+        }
+        $consulta = substr($consulta, 0, -2); //borramos la ultima coma ","
+        $consulta .= " where $key[0] = '$id'";
+
+        $ejecutar = $this->conex->prepare($consulta);
+        if ($ejecutar->execute() === true) {
+            return true;
+        }
+    }
+
+    public function insert(array $key, string $nombreTabla, array $valorsInput) {
+        $consulta = "insert into $nombreTabla (";
+        for ($index = 0; $index < count($key); $index++) {
+            $consulta .= $key[$index] . ", ";
+        }
+        $consulta = substr($consulta, 0, -2); //borramos la ultima coma ","
+        //
+         $consulta .= ") values(";
+
+        for ($index = 0; $index < count($valorsInput); $index++) {
+            $consulta .= "'".$valorsInput[$index] . "', ";
+        }
+        $consulta = substr($consulta, 0, -2); //borramos la ultima coma ","
+        $consulta .= ")";
+        echo "$consulta";
+
+        $ejecutar = $this->conex->prepare($consulta);
+        if ($ejecutar->execute() === true) {
+            return true;
+        }
+//        INSERT INTO MyGuests (firstname, lastname, email)
+//VALUES ('John', 'Doe', 'john@example.com')
+    }
+
+    public function eliminarFila(string $key, string $nameTable, string $id) {
+        $consulta = $this->conex->prepare("delete from $nameTable where $key='$id'");
+        if ($consulta->execute() === true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //setters and getters
     function getHost() {
         return $this->host;
     }

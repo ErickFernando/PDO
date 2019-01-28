@@ -3,29 +3,26 @@ spl_autoload_register(function($clase) {
     require_once "$clase.php";
 });
 session_start();
-$id = $_SESSION['id'];
-$nomTabs = $_SESSION['nomTab'];
-
+$nombTabla = $_SESSION['nombTab'];
 $key = [];
 $key = $_SESSION['key'];
 
 $bd = new ConexionPDO($_SESSION['conexion'], $_SESSION['ndb']);
 $bd->conectar();
 
-$valores = $bd->buscaValor($key[0], $nomTabs, $id);
+
+$campos = $bd->buscaValor2($nombTabla);
 $msj = "";
 if (isset($_POST['submit'])) {
     switch ($_POST['submit']) {
         case 'guardar':
-            echo "guardar";
             $datosAC = [];
             $datosAC = $_POST['valor1'];
-
-            if ($bd->update($key, $nomTabs, $id, $datosAC)) {
-                header("Location:editar.php");
-                exit();
+            $ok = $bd->insert($key, $nombTabla, $datosAC);
+            if ($ok) {
+                $msj = "Se ha incertado una nueva fila";
             } else {
-                $msj = "Error actualizando, ten encuenta las relaciones de integridad referencial  ";
+                $msj = "Algo ha fallado";
             }
             break;
         case 'cancelar':
@@ -41,17 +38,17 @@ if (isset($_POST['submit'])) {
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Regristro tabla</title>
+        <title>Insertar</title>
         <link rel="stylesheet" type="text/css" href="estilos.css">
     </head>
     <body>
         <header><h1><?php echo "$msj"; ?></h1></header>
-        <fieldset style="width: 30%">
-            <legend>Editando tabla <?php echo "$nomTabs"; ?></legend>
-            <form action="registroTabla.php" method="POST">
+        <fieldset>
+            <legend>Insertar datos en la tabla <?php echo "$nombTabla"; ?></legend>
+            <form action="insertar.php" method="POST">
                 <?php
-                foreach ($valores as $key => $value) {
-                    echo "<label>$key</label><input type='text' name='valor1[]' value='$value'><br/>";
+                foreach ($campos as $key => $value) {
+                    echo "<label>$key</label><input type='text' name='valor1[]' value=><br/>";
                 }
                 ?> 
                 <input type="submit" name='submit' value="guardar">
@@ -60,3 +57,4 @@ if (isset($_POST['submit'])) {
         </fieldset>
     </body>
 </html>
+

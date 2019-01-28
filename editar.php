@@ -5,28 +5,51 @@ spl_autoload_register(function($clase) {
 session_start();
 
 
-$_ndb = $_SESSION['ndb'];
-$conexion = $_SESSION['conexion'];
-
 $_nombTabla = $_SESSION['tabla'];
 
-
-$bd = new ConexionPDO($conexion, $_ndb);
+$bd = new ConexionPDO($_SESSION['conexion'], $_SESSION['ndb']);
 $bd->conectar();
 
 $campos = $bd->muestraCampos($_nombTabla);
 $posiciones = [];
-var_dump($campos[0]);
-$_SESSION['key'] = $campos[0];
+$_SESSION['key'] = $campos;
 $rows = $bd->muestraVlores($_nombTabla);
 
-if (isset($_POST['fila'])) {
-    echo "asdasd";
-    $_SESSION['id'] = $_POST['valor1'];
-    $_SESSION['nomTab'] = $_POST['valor2'];
 
-    header("Location:registroTabla.php");
-    exit();
+$msj = "";
+if (isset($_POST['submit'])) {
+
+    switch ($_POST['submit']) {
+        case 'editar':
+            $_SESSION['id'] = $_POST['valor1'];
+            $_SESSION['nomTab'] = $_POST['valor2'];
+            header("Location:registroTabla.php");
+            exit();
+
+            break;
+        case 'eliminar':
+            $id = $_POST['valor1'];
+            $nomTab = $_POST['valor2'];
+            $ok = $bd->eliminarFila($campos[0], $nomTab, $id);
+            if ($ok) {
+                $msj = "Se ha eliminado una fila";
+            } else {
+                $msj = "Imposible eliminar esa fila, puede que haga referencia a otra tabla.";
+            }
+            break;
+        case 'atras':
+            header("Location:tablas.php");
+            exit();
+            break;
+
+        case 'insertar':
+            $_SESSION['nombTab'] = $_nombTabla;
+            header("Location:insertar.php");
+            exit();
+            break;
+        default:
+            break;
+    }
 }
 //var_dump($filas);
 ?>
@@ -56,7 +79,7 @@ if (isset($_POST['fila'])) {
         </style>
     </head>
     <body>
-
+        <header><h1><?php echo "$msj"; ?></h1></header>
         <fieldset> <legend>DATOS <?php echo "$_nombTabla"; ?></legend>
             <table>
                 <?php
@@ -71,14 +94,20 @@ if (isset($_POST['fila'])) {
                     for ($index = 0; $index < count($f); $index++) {
                         echo "<td>$f[$index]";
                     }
-//                    echo "</td><td><a href='registroTabla.php?id=$f[0] & nomTab=$_nombTabla'>Editar</a></td><td>editar</td><tr/>";
-                    echo "</td><td><form action='editar.php' method='POST'><input type='hidden' name='valor1' value='$f[0]'>"
-                    . "<input type='hidden' name='valor2' value='$_nombTabla'>"
-                    . "<input type='submit' name='fila' value='editar'></form>"
-                    . "</td><td>editar</td><tr/>";
+//                    echo "</td><td><a href = 'registroTabla.php?id=$f[0] & nomTab=$_nombTabla'>Editar</a></td><td>editar</td><tr/>";
+                    echo "</td><td><form action = 'editar.php' method = 'POST'><input type ='hidden' name ='valor1' value ='$f[0]'>"
+                    . " <input type = 'hidden' name = 'valor2' value = '$_nombTabla'>"
+                    . " <input type = 'submit' name = 'submit' value = 'editar'></form>"
+                    . " </td>"
+                    . " <td><form action = 'editar.php' method = 'POST'><input type = 'hidden' name = 'valor1' value = '$f[0]'>"
+                    . " <input type = 'hidden' name = 'valor2' value = '$_nombTabla'>"
+                    . " <input type = 'submit' name = 'submit' value = 'eliminar'></form></td><tr/>";
                 }
-                echo "    </tbody>";
-                ?>
+                echo " </tbody>";
+                ?><form action="editar.php" method="POST" >
+                    <input style=" float: bottom" type="submit" name="submit" value="insertar">
+                    <input style=" float: bottom" type="submit" name="submit" value="atras">
+                </form>
 
             </table>
     </body>
